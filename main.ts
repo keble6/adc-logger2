@@ -25,6 +25,20 @@ function setDate (text: string) {
     DS3231.second()
     )
 }
+function upload () {
+    if (count > 0) {
+        serial.writeLine("#uploading")
+        basic.pause(2000)
+        for (let index = 0; index <= count - 1; index++) {
+            radio.sendString("" + dateTimeReadings[index] + "World")
+            radio.sendString("" + (Vreadings0[index]))
+            radio.sendString("" + (Vreadings1[index]))
+            radio.sendString("" + (Vreadings2[index]))
+            radio.sendString("" + (Vreadings3[index]))
+            basic.pause(500)
+        }
+    }
+}
 function setTime (text: string) {
     params = text.substr(2, text.length - 2)
     DS3231.dateTime(
@@ -50,6 +64,11 @@ radio.onReceivedString(function (receivedString) {
     } else if (command.compare("sd") == 0) {
         setDate(receivedString)
         serial.writeLine("#set date")
+    } else if (command.compare("up") == 0) {
+        upload()
+        serial.writeLine("#upload")
+    } else {
+    	
     }
 })
 input.onButtonPressed(Button.B, function () {
@@ -60,6 +79,12 @@ input.onButtonPressed(Button.B, function () {
     basic.showString(ADC3)
 })
 let command = ""
+let Vreadings3: string[] = []
+let Vreadings2: string[] = []
+let Vreadings1: string[] = []
+let Vreadings0: string[] = []
+let dateTimeReadings: string[] = []
+let count = 0
 let params = ""
 let ADC3 = ""
 let ADC2 = ""
@@ -71,3 +96,20 @@ let date = ""
 radio.setGroup(1)
 radio.setTransmitPower(7)
 serial.writeLine("starting")
+let oneMinute = 60000
+loops.everyInterval(oneMinute, function () {
+    if (DS3231.minute() % 15 == 0) {
+        serial.writeLine("#making a reading")
+        readTime()
+        dateTimeReadings.push(dateTime)
+        makeReading()
+        Vreadings0.push(ADC0)
+        Vreadings1.push(ADC1)
+        Vreadings2.push(ADC2)
+        Vreadings3.push(ADC3)
+    }
+    count += 1
+    led.plot(4, 0)
+    basic.pause(50)
+    led.unplot(4, 0)
+})
