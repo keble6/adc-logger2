@@ -4,7 +4,6 @@ function readTime () {
     dateTime = "" + date + " " + time
 }
 function setDate (text: string) {
-    command = text.substr(0, 2)
     params = text.substr(2, "Hello".length - 2)
     DS3231.dateTime(
     parseFloat(params.substr(4, 4)),
@@ -17,7 +16,6 @@ function setDate (text: string) {
     )
 }
 function setTime (text: string) {
-    command = text.substr(0, 2)
     params = text.substr(2, "Hello".length - 2)
     DS3231.dateTime(
     DS3231.year(),
@@ -30,22 +28,25 @@ function setTime (text: string) {
     )
 }
 radio.onReceivedString(function (receivedString) {
-    if (receivedString.substr(0, 2) == "rt") {
+    command = receivedString.substr(0, 2)
+    serial.writeLine("command = " + command)
+    if (command.compare("rt") == 0) {
         readTime()
         radio.sendString(dateTime)
         serial.writeLine("#read time")
-    } else if (receivedString.substr(0, 2) == "st") {
+    } else if (command.compare("st") == 0) {
         setTime(receivedString)
         serial.writeLine("#set time")
-    } else if (receivedString.substr(0, 2) == "sd") {
+    } else if (command.compare("sd") == 0) {
         setDate(receivedString)
         serial.writeLine("#set date")
     }
 })
-let params = ""
 let command = ""
+let params = ""
 let dateTime = ""
 let time = ""
 let date = ""
 radio.setGroup(1)
 radio.setTransmitPower(7)
+serial.writeLine("starting")
