@@ -3,6 +3,16 @@ function readTime () {
     time = "" + DS3231.hour() + ":" + DS3231.minute()
     dateTime = "" + date + " " + time
 }
+function makeReading () {
+    ADC0 = "" + convertToText(ADS1115.readADC(0)) + ","
+    ADC1 = "" + convertToText(ADS1115.readADC(1)) + ","
+    ADC2 = "" + convertToText(ADS1115.readADC(2)) + ","
+    ADC3 = convertToText(ADS1115.readADC(3))
+}
+input.onButtonPressed(Button.A, function () {
+    readTime()
+    basic.showString(dateTime)
+})
 function setDate (text: string) {
     params = text.substr(2, text.length - 2)
     DS3231.dateTime(
@@ -42,8 +52,19 @@ radio.onReceivedString(function (receivedString) {
         serial.writeLine("#set date")
     }
 })
+input.onButtonPressed(Button.B, function () {
+    makeReading()
+    basic.showString(ADC0)
+    basic.showString(ADC1)
+    basic.showString(ADC2)
+    basic.showString(ADC3)
+})
 let command = ""
 let params = ""
+let ADC3 = ""
+let ADC2 = ""
+let ADC1 = ""
+let ADC0 = ""
 let dateTime = ""
 let time = ""
 let date = ""
