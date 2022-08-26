@@ -4,7 +4,7 @@ function readTime () {
     dateTime = "" + date + " " + time
 }
 function setDate (text: string) {
-    params = text.substr(2, "Hello".length - 2)
+    params = text.substr(2, text.length - 2)
     DS3231.dateTime(
     parseFloat(params.substr(4, 4)),
     parseFloat(params.substr(2, 2)),
@@ -16,7 +16,7 @@ function setDate (text: string) {
     )
 }
 function setTime (text: string) {
-    params = text.substr(2, "Hello".length - 2)
+    params = text.substr(2, text.length - 2)
     DS3231.dateTime(
     DS3231.year(),
     DS3231.month(),
