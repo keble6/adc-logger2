@@ -32,17 +32,20 @@ function setTime (text: string) {
 radio.onReceivedString(function (receivedString) {
     if (receivedString.substr(0, 2) == "rt") {
         readTime()
-        radio.sendString("" + (dateTime))
+        radio.sendString(dateTime)
+        serial.writeLine("#read time")
     } else if (receivedString.substr(0, 2) == "st") {
         setTime(receivedString)
+        serial.writeLine("#set time")
     } else if (receivedString.substr(0, 2) == "sd") {
         setDate(receivedString)
+        serial.writeLine("#set date")
     }
 })
-let params: string = []
-let command: string = []
-let dateTime: string = []
-let time: string = []
-let date: string = []
+let params = ""
+let command = ""
+let dateTime = ""
+let time = ""
+let date = ""
 radio.setGroup(1)
 radio.setTransmitPower(7)
