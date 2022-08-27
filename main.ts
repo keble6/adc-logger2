@@ -9,6 +9,14 @@ function makeReading () {
     ADC2 = "" + convertToText(ADS1115.readADC(2)) + ","
     ADC3 = convertToText(ADS1115.readADC(3))
 }
+function resetReadings () {
+    count = 0
+    dateTimeReadings = []
+    Vreadings0 = []
+    Vreadings1 = []
+    Vreadings2 = []
+    Vreadings3 = []
+}
 input.onButtonPressed(Button.A, function () {
     readTime()
     basic.showString(dateTime)
@@ -67,6 +75,9 @@ radio.onReceivedString(function (receivedString) {
     } else if (command.compare("up") == 0) {
         upload()
         serial.writeLine("#upload")
+    } else if (command.compare("xx") == 0) {
+        resetReadings()
+        serial.writeLine("#resetReadings")
     } else {
     	
     }
@@ -79,13 +90,13 @@ input.onButtonPressed(Button.B, function () {
     basic.showString(ADC3)
 })
 let command = ""
+let params = ""
 let Vreadings3: string[] = []
 let Vreadings2: string[] = []
 let Vreadings1: string[] = []
 let Vreadings0: string[] = []
 let dateTimeReadings: string[] = []
 let count = 0
-let params = ""
 let ADC3 = ""
 let ADC2 = ""
 let ADC1 = ""
@@ -97,6 +108,7 @@ radio.setGroup(1)
 radio.setTransmitPower(7)
 serial.writeLine("starting")
 let oneMinute = 60000
+resetReadings()
 loops.everyInterval(oneMinute, function () {
     if (DS3231.minute() % 15 == 0) {
         serial.writeLine("#making a reading")
