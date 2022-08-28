@@ -4,7 +4,10 @@ function readTime () {
     dateTime = "" + date + " " + time
 }
 function makeReading () {
-    ADC0 = "" + convertToText(0)
+    ADC0 = "" + convertToText(ADS1115.readADC(0)) + ","
+    ADC1 = "" + convertToText(ADS1115.readADC(1)) + ","
+    ADC2 = "" + convertToText(ADS1115.readADC(2)) + ","
+    ADC3 = "" + convertToText(ADS1115.readADC(3)) + ","
 }
 function resetReadings () {
     count = 0
@@ -88,9 +91,6 @@ input.onButtonPressed(Button.B, function () {
     basic.showString(ADC2)
     basic.showString(ADC3)
 })
-let ADC3 = ""
-let ADC2 = ""
-let ADC1 = ""
 let command = ""
 let stringIn = ""
 let params = ""
@@ -100,6 +100,9 @@ let Vreadings1: string[] = []
 let Vreadings0: string[] = []
 let dateTimeReadings: string[] = []
 let count = 0
+let ADC3 = ""
+let ADC2 = ""
+let ADC1 = ""
 let ADC0 = ""
 let dateTime = ""
 let time = ""
