@@ -4,10 +4,7 @@ function readTime () {
     dateTime = "" + date + " " + time
 }
 function makeReading () {
-    ADC0 = "" + convertToText(ADS1115.readADC(0)) + ","
-    ADC1 = "" + convertToText(ADS1115.readADC(1)) + ","
-    ADC2 = "" + convertToText(ADS1115.readADC(2)) + ","
-    ADC3 = convertToText(ADS1115.readADC(3))
+    ADC0 = "" + convertToText(0)
 }
 function resetReadings () {
     count = 0
@@ -33,17 +30,42 @@ function setDate (text: string) {
     DS3231.second()
     )
 }
+bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
+    stringIn = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
+    command = stringIn.substr(0, 2)
+    serial.writeLine("command = " + command)
+    if (command.compare("rt") == 0) {
+        readTime()
+        serial.writeLine("#read time")
+    } else if (command.compare("st") == 0) {
+        setTime(stringIn)
+        serial.writeLine("#set time")
+    } else if (command.compare("sd") == 0) {
+        setDate(stringIn)
+        serial.writeLine("#set date")
+    } else if (command.compare("up") == 0) {
+        upload()
+        serial.writeLine("#upload")
+    } else if (command.compare("xx") == 0) {
+        resetReadings()
+        serial.writeLine("#resetReadings")
+    }
+})
 function upload () {
     if (count > 0) {
         serial.writeLine("#uploading")
-        basic.pause(2000)
+        basic.pause(1000)
         for (let index = 0; index <= count - 1; index++) {
-            radio.sendString("" + dateTimeReadings[index] + "World")
-            radio.sendString("" + (Vreadings0[index]))
-            radio.sendString("" + (Vreadings1[index]))
-            radio.sendString("" + (Vreadings2[index]))
-            radio.sendString("" + (Vreadings3[index]))
-            basic.pause(500)
+            bluetooth.uartWriteString(dateTimeReadings[index])
+            basic.pause(100)
+            bluetooth.uartWriteString(Vreadings0[index])
+            basic.pause(100)
+            bluetooth.uartWriteString(Vreadings1[index])
+            basic.pause(100)
+            bluetooth.uartWriteString(Vreadings2[index])
+            basic.pause(100)
+            bluetooth.uartWriteString(Vreadings3[index])
+            basic.pause(100)
         }
     }
 }
@@ -59,29 +81,6 @@ function setTime (text: string) {
     0
     )
 }
-radio.onReceivedString(function (receivedString) {
-    command = receivedString.substr(0, 2)
-    serial.writeLine("command = " + command)
-    if (command.compare("rt") == 0) {
-        readTime()
-        radio.sendString(dateTime)
-        serial.writeLine("#read time")
-    } else if (command.compare("st") == 0) {
-        setTime(receivedString)
-        serial.writeLine("#set time")
-    } else if (command.compare("sd") == 0) {
-        setDate(receivedString)
-        serial.writeLine("#set date")
-    } else if (command.compare("up") == 0) {
-        upload()
-        serial.writeLine("#upload")
-    } else if (command.compare("xx") == 0) {
-        resetReadings()
-        serial.writeLine("#resetReadings")
-    } else {
-    	
-    }
-})
 input.onButtonPressed(Button.B, function () {
     makeReading()
     basic.showString(ADC0)
@@ -89,7 +88,11 @@ input.onButtonPressed(Button.B, function () {
     basic.showString(ADC2)
     basic.showString(ADC3)
 })
+let ADC3 = ""
+let ADC2 = ""
+let ADC1 = ""
 let command = ""
+let stringIn = ""
 let params = ""
 let Vreadings3: string[] = []
 let Vreadings2: string[] = []
@@ -97,16 +100,13 @@ let Vreadings1: string[] = []
 let Vreadings0: string[] = []
 let dateTimeReadings: string[] = []
 let count = 0
-let ADC3 = ""
-let ADC2 = ""
-let ADC1 = ""
 let ADC0 = ""
 let dateTime = ""
 let time = ""
 let date = ""
-radio.setGroup(1)
-radio.setTransmitPower(7)
-serial.writeLine("starting")
+serial.writeLine("#starting")
+bluetooth.uartWriteString("starting")
+bluetooth.startUartService()
 let oneMinute = 60000
 resetReadings()
 loops.everyInterval(oneMinute, function () {
