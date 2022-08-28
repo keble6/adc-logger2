@@ -4,10 +4,10 @@ function readTime () {
     dateTime = "" + date + " " + time
 }
 function makeReading () {
-    ADC0 = "" + convertToText(ADS1115.readADC(0)) + ","
-    ADC1 = "" + convertToText(ADS1115.readADC(1)) + ","
-    ADC2 = "" + convertToText(ADS1115.readADC(2)) + ","
-    ADC3 = "" + convertToText(ADS1115.readADC(3)) + ","
+    ADC0 = "" + convertToText(_2decPlaces(ADS1115.readADC(0), 3)) + ","
+    ADC1 = "" + convertToText(_2decPlaces(ADS1115.readADC(1), 3)) + ","
+    ADC2 = "" + convertToText(_2decPlaces(ADS1115.readADC(2), 3)) + ","
+    ADC3 = convertToText(_2decPlaces(ADS1115.readADC(3), 3))
 }
 function resetReadings () {
     count = 0
@@ -16,6 +16,11 @@ function resetReadings () {
     Vreadings1 = []
     Vreadings2 = []
     Vreadings3 = []
+}
+function _2decPlaces (num: number, places: number) {
+    a = 10 ** places
+    b = Math.round(num * a)
+    return b / a
 }
 input.onButtonPressed(Button.A, function () {
     readTime()
@@ -94,6 +99,8 @@ input.onButtonPressed(Button.B, function () {
 let command = ""
 let stringIn = ""
 let params = ""
+let b = 0
+let a = 0
 let Vreadings3: string[] = []
 let Vreadings2: string[] = []
 let Vreadings1: string[] = []
