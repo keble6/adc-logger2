@@ -1,7 +1,7 @@
 function readTime () {
     date = "" + DS3231.date() + "/" + DS3231.month() + "/" + DS3231.year()
     time = "" + DS3231.hour() + ":" + DS3231.minute()
-    dateTime = "" + date + " " + time
+    dateTime = "" + date + " " + time + ","
 }
 function makeReading () {
     ADC0 = "" + convertToText(_2decPlaces(ADS1115.readADC(0), 3)) + ","
@@ -64,7 +64,11 @@ function upload () {
         serial.writeLine("#uploading")
         basic.pause(1000)
         for (let index = 0; index <= count - 1; index++) {
-        	
+            bluetooth.uartWriteString(dateTimeReadings[index])
+            bluetooth.uartWriteString(Vreadings0[index])
+            bluetooth.uartWriteString(Vreadings1[index])
+            bluetooth.uartWriteString(Vreadings2[index])
+            bluetooth.uartWriteLine(Vreadings3[index])
         }
     }
 }
@@ -83,6 +87,7 @@ function setTime (text: string) {
 input.onButtonPressed(Button.B, function () {
     makeReading()
     basic.showString(ADC0)
+    serial.writeLine(ADC0)
     basic.showString(ADC1)
     basic.showString(ADC2)
     basic.showString(ADC3)
@@ -110,8 +115,7 @@ bluetooth.startUartService()
 let oneMinute = 60000
 resetReadings()
 loops.everyInterval(oneMinute, function () {
-    if (DS3231.minute() % 15 == 0) {
-        serial.writeLine("#making a reading")
+    if (DS3231.minute() % 5 == 0) {
         readTime()
         dateTimeReadings.push(dateTime)
         makeReading()
