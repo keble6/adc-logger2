@@ -17,6 +17,11 @@ function resetReadings () {
     Vreadings2 = []
     Vreadings3 = []
 }
+bluetooth.onBluetoothConnected(function () {
+    basic.showIcon(IconNames.Square)
+    basic.pause(2000)
+    basic.clearScreen()
+})
 function _2decPlaces (num: number, places: number) {
     a = 10 ** places
     b = Math.round(num * a)
@@ -41,22 +46,17 @@ function setDate (text: string) {
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
     stringIn = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
     command = stringIn.substr(0, 2)
-    serial.writeLine("command = " + command)
     if (command.compare("rt") == 0) {
         readTime()
-        serial.writeLine("#read time")
+        bluetooth.uartWriteString(dateTime)
     } else if (command.compare("st") == 0) {
         setTime(stringIn)
-        serial.writeLine("#set time")
     } else if (command.compare("sd") == 0) {
         setDate(stringIn)
-        serial.writeLine("#set date")
     } else if (command.compare("up") == 0) {
         upload()
-        serial.writeLine("#upload")
     } else if (command.compare("xx") == 0) {
         resetReadings()
-        serial.writeLine("#resetReadings")
     }
 })
 function upload () {
@@ -64,16 +64,7 @@ function upload () {
         serial.writeLine("#uploading")
         basic.pause(1000)
         for (let index = 0; index <= count - 1; index++) {
-            bluetooth.uartWriteString(dateTimeReadings[index])
-            basic.pause(100)
-            bluetooth.uartWriteString(Vreadings0[index])
-            basic.pause(100)
-            bluetooth.uartWriteString(Vreadings1[index])
-            basic.pause(100)
-            bluetooth.uartWriteString(Vreadings2[index])
-            basic.pause(100)
-            bluetooth.uartWriteString(Vreadings3[index])
-            basic.pause(100)
+        	
         }
     }
 }
@@ -115,7 +106,6 @@ let dateTime = ""
 let time = ""
 let date = ""
 serial.writeLine("#starting")
-bluetooth.uartWriteString("starting")
 bluetooth.startUartService()
 let oneMinute = 60000
 resetReadings()
