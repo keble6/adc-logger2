@@ -4,9 +4,9 @@ function readTime () {
     dateTime = "" + date + " " + time + ","
 }
 function makeReading () {
-    ADC0 = "" + convertToText(_2decPlaces(ADS1115.readADC(0), 3)) + ","
-    ADC1 = "" + convertToText(_2decPlaces(ADS1115.readADC(1), 3)) + ","
-    ADC2 = "" + convertToText(_2decPlaces(ADS1115.readADC(2), 3)) + ","
+    ADC0 = "" + _2decPlaces(ADS1115.readADC(0), 3) + ","
+    ADC1 = "" + _2decPlaces(ADS1115.readADC(1), 3) + ","
+    ADC2 = "" + _2decPlaces(ADS1115.readADC(2), 3) + ","
     ADC3 = convertToText(_2decPlaces(ADS1115.readADC(3), 3))
 }
 function resetReadings () {
