@@ -61,7 +61,6 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () 
 })
 function upload () {
     if (count > 0) {
-        serial.writeLine("#uploading")
         basic.pause(1000)
         for (let index = 0; index <= count - 1; index++) {
             bluetooth.uartWriteString(dateTimeReadings[index])
@@ -87,7 +86,6 @@ function setTime (text: string) {
 input.onButtonPressed(Button.B, function () {
     makeReading()
     basic.showString(ADC0)
-    serial.writeLine(ADC0)
     basic.showString(ADC1)
     basic.showString(ADC2)
     basic.showString(ADC3)
@@ -110,7 +108,6 @@ let ADC0 = ""
 let dateTime = ""
 let time = ""
 let date = ""
-serial.writeLine("#starting")
 bluetooth.startUartService()
 let oneMinute = 60000
 resetReadings()
@@ -123,8 +120,8 @@ loops.everyInterval(oneMinute, function () {
         Vreadings1.push(ADC1)
         Vreadings2.push(ADC2)
         Vreadings3.push(ADC3)
+        count += 1
     }
-    count += 1
     led.plot(4, 0)
     basic.pause(50)
     led.unplot(4, 0)
