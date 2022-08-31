@@ -17,11 +17,6 @@ function resetReadings () {
     Vreadings2 = []
     Vreadings3 = []
 }
-bluetooth.onBluetoothConnected(function () {
-    basic.showIcon(IconNames.Square)
-    basic.pause(2000)
-    basic.clearScreen()
-})
 function _2decPlaces (num: number, places: number) {
     a = 10 ** places
     b = Math.round(num * a)
@@ -43,31 +38,11 @@ function setDate (text: string) {
     DS3231.second()
     )
 }
-bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
-    stringIn = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
-    command = stringIn.substr(0, 2)
-    if (command.compare("rt") == 0) {
-        readTime()
-        bluetooth.uartWriteString(dateTime)
-    } else if (command.compare("st") == 0) {
-        setTime(stringIn)
-    } else if (command.compare("sd") == 0) {
-        setDate(stringIn)
-    } else if (command.compare("up") == 0) {
-        upload()
-    } else if (command.compare("xx") == 0) {
-        resetReadings()
-    }
-})
 function upload () {
     if (count > 0) {
         basic.pause(1000)
         for (let index = 0; index <= count - 1; index++) {
-            bluetooth.uartWriteString(dateTimeReadings[index])
-            bluetooth.uartWriteString(Vreadings0[index])
-            bluetooth.uartWriteString(Vreadings1[index])
-            bluetooth.uartWriteString(Vreadings2[index])
-            bluetooth.uartWriteLine(Vreadings3[index])
+        	
         }
     }
 }
@@ -108,7 +83,6 @@ let ADC0 = ""
 let dateTime = ""
 let time = ""
 let date = ""
-bluetooth.startUartService()
 let oneMinute = 60000
 resetReadings()
 loops.everyInterval(oneMinute, function () {
@@ -125,4 +99,33 @@ loops.everyInterval(oneMinute, function () {
     led.plot(4, 0)
     basic.pause(50)
     led.unplot(4, 0)
+})
+basic.forever(function () {
+    stringIn = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
+    command = stringIn.substr(0, 2)
+    if (command.compare("rt") == 0) {
+        readTime()
+        bluetooth.uartWriteString(dateTime)
+    } else if (command.compare("st") == 0) {
+        setTime(stringIn)
+    } else if (command.compare("sd") == 0) {
+        setDate(stringIn)
+    } else if (command.compare("up") == 0) {
+        upload()
+    } else if (command.compare("xx") == 0) {
+        resetReadings()
+    }
+})
+basic.forever(function () {
+    basic.showIcon(IconNames.Square)
+    basic.pause(2000)
+    basic.clearScreen()
+})
+basic.forever(function () {
+    let index = 0
+    basic.showString("" + (dateTimeReadings[index]))
+    basic.showString("" + (Vreadings0[index]))
+    basic.showString("" + (Vreadings1[index]))
+    basic.showString("" + (Vreadings2[index]))
+    basic.showString("" + (Vreadings3[index]))
 })

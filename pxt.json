@@ -1,5 +1,5 @@
 {
-    "name": "adc-logger2",
+    "name": "adc-logger-radio",
     "description": "",
     "dependencies": {
         "core": "*",
